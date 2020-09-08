@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_app/models/User.dart';
 import 'package:inventory_app/services/ApiService.dart';
+import 'package:inventory_app/utils/cache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class User extends ChangeNotifier {
@@ -12,8 +13,7 @@ class User extends ChangeNotifier {
 
   void setUser(UserModel user) async {
     this._user['token'] = user.accessToken;
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('token', user.accessToken);
+    CachedStorage.saveUserKey(user.accessToken);
     notifyListeners();
   }
 
@@ -36,8 +36,8 @@ class User extends ChangeNotifier {
         'password': password,
       });
       setUser(user);
-      return true;
       setLoading(false);
+      return true;
     } catch (error) {
       setError(error);
     }

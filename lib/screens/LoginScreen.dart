@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inventory_app/providers/User.dart';
 import 'package:inventory_app/screens/utils/BottomClipper.dart';
 import 'package:inventory_app/utils/app_colors.dart';
+import 'package:inventory_app/utils/cache.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +15,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _usernameController = TextEditingController();
   bool _obscureText = true;
+
+  void checkUserState() async {
+    String key = await CachedStorage.getUserKey();
+    if(key != null) {
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+  }
+
+  @override
+  void initState() {
+    checkUserState();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

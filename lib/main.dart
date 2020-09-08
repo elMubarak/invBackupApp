@@ -48,6 +48,9 @@ class HomePage extends StatelessWidget {
     return MaterialApp(
       title: 'Inventory App',
       initialRoute: '/',
+      routes: {
+
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primarySwatch: Colors.blue,
