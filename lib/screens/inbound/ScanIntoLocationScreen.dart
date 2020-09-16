@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_app/screens/inbound/ScanIntoLocationSuccessScreen.dart';
-import 'package:inventory_app/screens/inbound/ScanSuccessScreen.dart';
 import 'package:inventory_app/screens/utils/ClearableTextField.dart';
 import 'package:inventory_app/screens/utils/CustomOverlay.dart';
 import 'package:inventory_app/screens/utils/DialogUtils.dart';
@@ -57,7 +56,7 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
         showingSuccess = true;
       });
 
-      poList.add(POItem(scanData, 'Google Chromecast'));
+      // poList.add(POItem(scanData, 'Google Chromecast'));
       _animatedListKey.currentState
           ?.insertItem(0, duration: Duration(milliseconds: 500));
 
@@ -296,7 +295,7 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
                   color: AppWhite,
                   border: Border(bottom: BorderSide(color: AppMediumGray))),
               child: ListTile(
-                title: Text(f.ID,
+                title: Text(f.ID.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .body2
@@ -327,7 +326,7 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.ID,
+        title: Text(f.ID.toString(),
             style: Theme.of(context).textTheme.body2.copyWith(fontSize: 15)),
         subtitle: Text(f.title, style: Theme.of(context).textTheme.body1),
         trailing: PopupMenuButton(

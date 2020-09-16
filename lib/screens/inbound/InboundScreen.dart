@@ -9,6 +9,12 @@ class InboundScreen extends StatefulWidget {
 }
 
 class _InboundScreenState extends State<InboundScreen> {
+  var token;
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

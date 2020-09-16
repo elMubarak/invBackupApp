@@ -15,6 +15,7 @@ class ClearableTextField extends StatelessWidget {
     return TextField(
       controller: textEditingController,
       style: Theme.of(context).textTheme.body1,
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: label,
         suffixIcon: InkWell(
@@ -26,8 +27,9 @@ class ClearableTextField extends StatelessWidget {
             textEditingController.clear();
           },
         ),
-        border:
-            OutlineInputBorder(borderRadius: new BorderRadius.circular(5.0)),
+        border: OutlineInputBorder(
+          borderRadius: new BorderRadius.circular(5.0),
+        ),
       ),
     );
   }

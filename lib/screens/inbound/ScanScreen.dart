@@ -37,7 +37,7 @@ class _ScanScreenState extends State<ScanScreen> {
       _controller.pauseCamera();
       showScanSuccess();
 
-      poList.add(POItem(scanData, 'Google Chromecast'));
+      // poList.add(POItem(scanData, 'Google Chromecast'));
       _animatedListKey.currentState
           ?.insertItem(0, duration: Duration(milliseconds: 500));
 
@@ -101,9 +101,11 @@ class _ScanScreenState extends State<ScanScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(3),
                   border: Border.all(color: Colors.grey[300]),
-                  color: showingScanSuccess ? Color(0xFFC7F6E2) :  poList.length > 0
-                      ? tileIsOpen ? Color(0xFF839AB0) : Colors.white
-                      : Colors.grey[300],
+                  color: showingScanSuccess
+                      ? Color(0xFFC7F6E2)
+                      : poList.length > 0
+                          ? tileIsOpen ? Color(0xFF839AB0) : Colors.white
+                          : Colors.grey[300],
                 ),
                 child: ExpansionTile(
                   title: Container(
@@ -273,7 +275,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   color: AppWhite,
                   border: Border(bottom: BorderSide(color: AppMediumGray))),
               child: ListTile(
-                title: Text(f.ID,
+                title: Text(f.ID.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .body2
@@ -316,7 +318,7 @@ class _ScanScreenState extends State<ScanScreen> {
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.ID,
+        title: Text(f.ID.toString(),
             style: Theme.of(context).textTheme.body2.copyWith(fontSize: 15)),
         subtitle: Text(f.title, style: Theme.of(context).textTheme.body1),
         trailing: PopupMenuButton(
