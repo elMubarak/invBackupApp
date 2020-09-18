@@ -238,6 +238,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
     );
   }
 
+//stuff it
   List<Widget> _buildPoItems(List<POItem> items) {
     return items
         .map((f) => Container(
@@ -251,7 +252,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
                       Theme.of(context).textTheme.body2.copyWith(fontSize: 15),
                 ),
                 subtitle: Text(
-                  f.sku,
+                  f.name,
                   style: Theme.of(context).textTheme.body1,
                 ),
               ),
@@ -266,64 +267,62 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
       builder: (BuildContext context) {
         return Query(
           options: QueryOptions(
-            documentNode: gql(
-              requests.getReceipts(int.parse(poIdController.text.toString())),
-            ),
+            documentNode: gql(requests.getGrnFillter(poIdController.text)),
           ),
-          builder: (QueryResult result,
-              {VoidCallback refetch, FetchMore fetchMore}) {
-            if (result.hasException) {
-              return AlertDialog(
-                content: Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Purchase order ID not found',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+        );
+        builder:
+        (QueryResult result, {VoidCallback refetch, FetchMore fetchMore}) {
+          if (result.hasException) {
+            return AlertDialog(
+              content: Container(
+                color: Colors.white,
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Purchase order ID not found',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
-            }
+              ),
+            );
+          }
 
-            if (result.loading) {
-              return AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    Container(
-                      height: 16,
-                    ),
-                    Center(
-                      child: Text(
-                        'Loading data, Please wait...',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+          if (result.loading) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  Container(
+                    height: 16,
+                  ),
+                  Center(
+                    child: Text(
+                      'Loading data, Please wait...',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              );
-            }
+                  ),
+                ],
+              ),
+            );
+          }
 
-            // it can be either Map or List
-            // print("Response: ${jsonEncode(result.data)}");
-            var data = result.data['goodsReceipt'];
-            var receipt = jsonEncode(data);
-            var jsonReceipt = jsonDecode(receipt);
-            print("Result: $receipt");
-            poList.clear();
-            for (int i = 0; i < jsonReceipt['items'].length; i++) {
-              POItem item = POItem.fromJson(jsonReceipt['items'][i]);
-              poList.add(item);
-            }
-            Navigator.of(context).pop();
-            return Container();
-          },
-        );
+          // it can be either Map or List
+          // print("Response: ${jsonEncode(result.data)}");
+          var data = result.data['getGRNs'];
+          var receipt = jsonEncode(data);
+          var jsonReceipt = jsonDecode(receipt);
+          print("Result: $receipt");
+          poList.clear();
+          for (int i = 0; i < jsonReceipt['items'].length; i++) {
+            POItem item = POItem.fromJson(jsonReceipt['items'][i]);
+            poList.add(item);
+          }
+          Navigator.of(context).pop();
+          return Container();
+        };
       },
     );
   }
@@ -331,6 +330,8 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
 
 class POItem {
   int ID;
+  String name;
+  String description;
   String title;
   int price;
   int total;
@@ -339,6 +340,8 @@ class POItem {
 //  POItem(this.ID, this.title);
   POItem.fromJson(Map<String, dynamic> json) {
     ID = json['id'];
+    name = json['name'];
+    description = json['description'];
     price = json['price'];
     total = json['total'];
     sku = json['sku'];
