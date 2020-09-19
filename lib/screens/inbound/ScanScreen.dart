@@ -51,7 +51,7 @@ class _ScanScreenState extends State<ScanScreen> {
     });
   }
 
-  List<POItem> poList = [];
+  List<ReceiptItem> poList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -275,13 +275,13 @@ class _ScanScreenState extends State<ScanScreen> {
                   color: AppWhite,
                   border: Border(bottom: BorderSide(color: AppMediumGray))),
               child: ListTile(
-                title: Text(f.ID.toString(),
+                title: Text(f.id.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .body2
                         .copyWith(fontSize: 15)),
                 subtitle:
-                    Text(f.title, style: Theme.of(context).textTheme.body1),
+                    Text(f.name, style: Theme.of(context).textTheme.body1),
                 trailing: PopupMenuButton(
                   onSelected: (value) {
                     setState(() {
@@ -312,15 +312,15 @@ class _ScanScreenState extends State<ScanScreen> {
     });
   }
 
-  Widget _buildSinglePoItem(POItem f, int index) {
+  Widget _buildSinglePoItem(ReceiptItem f, int index) {
     return Container(
       decoration: BoxDecoration(
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.ID.toString(),
+        title: Text(f.id.toString(),
             style: Theme.of(context).textTheme.body2.copyWith(fontSize: 15)),
-        subtitle: Text(f.title, style: Theme.of(context).textTheme.body1),
+        subtitle: Text(f.name, style: Theme.of(context).textTheme.body1),
         trailing: PopupMenuButton(
           onSelected: (value) {
             _animatedListKey.currentState.removeItem(index,
@@ -342,7 +342,7 @@ class _ScanScreenState extends State<ScanScreen> {
     );
   }
 
-  Card _buildRemovedItem(int index, POItem f) {
+  Card _buildRemovedItem(int index, ReceiptItem f) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       color: Color(0xFF253B52),

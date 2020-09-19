@@ -19,7 +19,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
   String chosenType = "0";
   final poIdController = TextEditingController();
 
-  final List<POItem> poList = [];
+  final List<ReceiptItem> poList = [];
 
   bool tileIsOpen = false;
   var network = Network();
@@ -151,7 +151,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
                                   ]);*/
                                   if (poIdController.text.isEmpty) {
                                     Toast.show(
-                                        "Enter Purchase Order ID", context);
+                                        "Enter Purchase Order number", context);
                                   } else {
                                     showLoadingDialog();
                                   }
@@ -239,7 +239,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
   }
 
 //stuff it
-  List<Widget> _buildPoItems(List<POItem> items) {
+  List<Widget> _buildPoItems(List<ReceiptItem> items) {
     return items
         .map((f) => Container(
               decoration: BoxDecoration(
@@ -247,27 +247,30 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
                   border: Border(bottom: BorderSide(color: AppMediumGray))),
               child: ListTile(
                 title: Text(
-                  f.ID.toString(),
+                  "Name: ${f.name}",
                   style:
                       Theme.of(context).textTheme.body2.copyWith(fontSize: 15),
                 ),
                 subtitle: Text(
-                  f.name,
+                  f.description == null
+                      ? "Desc : NA"
+                      : "Desc: ${f.description}",
                   style: Theme.of(context).textTheme.body1,
                 ),
+                trailing: Text('Qty: ${f.qty}'),
               ),
             ))
         .toList();
   }
 
-  void showLoadingDialog() {
+  /*void showLoadingDialog() {
     var showLoader = false;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Query(
           options: QueryOptions(
-            documentNode: gql(requests.getGrnFillter(poIdController.text)),
+            documentNode: gql(requests.getGrns(poIdController.text.toString())),
           ),
         );
         builder:
@@ -325,25 +328,114 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
         };
       },
     );
+  }*/
+
+  void showLoadingDialog() {
+    var showLoader = false;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Query(
+          options: QueryOptions(
+            documentNode: gql(
+              requests.getGrns(poIdController.text.toString()),
+            ),
+            variables: {
+              'filter': {'poNo': poIdController.text.toString()},
+            },
+          ),
+          builder: (QueryResult result,
+              {VoidCallback refetch, FetchMore fetchMore}) {
+            if (result.hasException) {
+              print("Exception:: ${result.exception.toString()}");
+              return AlertDialog(
+                content: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Purchase order ID not found',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            if (result.loading) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Container(
+                      height: 16,
+                    ),
+                    Center(
+                      child: Text(
+                        'Loading data, Please wait...',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // it can be either Map or List
+            //  print("Response: ${jsonEncode(result.data)}");
+            var data = result.data['goodsReceipts'];
+            var receipt = jsonEncode(data);
+            var jsonReceipt = jsonDecode(receipt);
+            print("Result: $receipt");
+            poList.clear();
+            for (int i = 0; i < jsonReceipt['data'].length; i++) {
+              POItem item = POItem.fromJson(jsonReceipt['data'][i]);
+              poList.addAll(item.items);
+            }
+            Navigator.of(context).pop();
+            return Container();
+          },
+        );
+      },
+    );
   }
 }
 
 class POItem {
-  int ID;
-  String name;
-  String description;
-  String title;
-  int price;
-  int total;
-  String sku;
+  int id;
+  String receiptNo;
+  String poNo;
+  List<ReceiptItem> items = List();
 
 //  POItem(this.ID, this.title);
   POItem.fromJson(Map<String, dynamic> json) {
-    ID = json['id'];
+    id = json['id'];
+    receiptNo = json['receiptNo'];
+    poNo = json['poNo'];
+    var arr = json['items'];
+    for (int i = 0; i < arr.length; i++) {
+      ReceiptItem item = ReceiptItem.fromJson(arr[i]);
+      items.add(item);
+    }
+  }
+}
+
+class ReceiptItem {
+  int id;
+  String name;
+  String sku;
+  int qty;
+  String description;
+
+//  POItem(this.ID, this.title);
+  ReceiptItem.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     name = json['name'];
     description = json['description'];
-    price = json['price'];
-    total = json['total'];
     sku = json['sku'];
+    qty = json['qty'];
   }
 }

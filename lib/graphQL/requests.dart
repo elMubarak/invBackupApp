@@ -19,34 +19,39 @@ class Requests {
   }
 
   String getGrns(String poNo) {
-    return """
- getGRNs{
-  goodsReceipts {
-    data {
-      id
-      receiptNo,
-      poNo,
-      userId
-      createdAt
-      items {
-        id
-        sku
-        qty
-        price
-        name
-        warehouseLocationId
-      }
-    }
-    count
-    page
-    pages
-  }
-}
+    var filter = """
+          {
+            inboundFetchInput: {
+            poNo:"$poNo"
+            }
+          }
+          """;
 
+    return """
+    query getGrn(\$filter: InboundFetchInput)
+    {
+        goodsReceipts(inboundFetchInput: \$filter) {
+          data {
+          id
+          receiptNo,
+          poNo,
+          items {
+            description
+            id,
+            sku
+            name
+            qty
+          }
+        }
+        count
+        page
+        pages
+        }
+    }
     """;
   }
 
-  String getGrnFillter(String grnsFilter) {
+  String getGrnFilter(String grnsFilter) {
     return """
     query getGRNsWithParams($grnsFilter: InboundFetchInput){
   goodsReceipts(inboundFetchInput: $grnsFilter) {
