@@ -19,7 +19,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
   String chosenType = "0";
   final poIdController = TextEditingController();
 
-  final List<ReceiptItem> poList = [];
+  final List<POItem> poList = [];
 
   bool tileIsOpen = false;
   var network = Network();
@@ -239,7 +239,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
   }
 
 //stuff it
-  List<Widget> _buildPoItems(List<ReceiptItem> items) {
+  List<Widget> _buildPoItems(List<POItem> items) {
     return items
         .map((f) => Container(
               decoration: BoxDecoration(
@@ -248,14 +248,14 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
               child: ListTile(
                 title: Text(
                   "Name: ${f.name}",
-                  style:
-                      Theme.of(context).textTheme.body2.copyWith(fontSize: 15),
+                  /*style:
+                      Theme.of(context).textTheme.body2.copyWith(fontSize: 15),*/
                 ),
                 subtitle: Text(
                   f.description == null
                       ? "Desc : NA"
                       : "Desc: ${f.description}",
-                  style: Theme.of(context).textTheme.body1,
+                  //style: Theme.of(context).textTheme.body1,
                 ),
                 trailing: Text('Qty: ${f.qty}'),
               ),
@@ -338,10 +338,10 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
         return Query(
           options: QueryOptions(
             documentNode: gql(
-              requests.getGrns(poIdController.text.toString()),
+              requests.fetchPo(),
             ),
             variables: {
-              'filter': {'poNo': poIdController.text.toString()},
+              'poVar': {'poNo': poIdController.text.toString()},
             },
           ),
           builder: (QueryResult result,
@@ -386,14 +386,14 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
 
             // it can be either Map or List
             //  print("Response: ${jsonEncode(result.data)}");
-            var data = result.data['goodsReceipts'];
+            var data = result.data['getPOItems'];
             var receipt = jsonEncode(data);
             var jsonReceipt = jsonDecode(receipt);
             print("Result: $receipt");
             poList.clear();
-            for (int i = 0; i < jsonReceipt['data'].length; i++) {
-              POItem item = POItem.fromJson(jsonReceipt['data'][i]);
-              poList.addAll(item.items);
+            for (int i = 0; i < jsonReceipt.length; i++) {
+              POItem item = POItem.fromJson(jsonReceipt[i]);
+              poList.add(item);
             }
             Navigator.of(context).pop();
             return Container();
@@ -405,25 +405,35 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
 }
 
 class POItem {
-  int id;
-  String receiptNo;
+  String name;
+  String sku;
   String poNo;
-  List<ReceiptItem> items = List();
+  String description;
+  String statusCode;
+  int qty;
+  int price;
+  int total;
+  // List<ReceiptItem> items = List();
 
 //  POItem(this.ID, this.title);
   POItem.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    receiptNo = json['receiptNo'];
+    name = json['name'];
+    sku = json['sku'];
     poNo = json['poNo'];
-    var arr = json['items'];
-    for (int i = 0; i < arr.length; i++) {
+    description = json['description'];
+    statusCode = json['statusCode'];
+    qty = json['qty'];
+    price = json['price'];
+    total = json['total'];
+    //var arr = json['items'];
+    /*for (int i = 0; i < arr.length; i++) {
       ReceiptItem item = ReceiptItem.fromJson(arr[i]);
       items.add(item);
-    }
+    }*/
   }
 }
 
-class ReceiptItem {
+/*class ReceiptItem {
   int id;
   String name;
   String sku;
@@ -438,4 +448,4 @@ class ReceiptItem {
     sku = json['sku'];
     qty = json['qty'];
   }
-}
+}*/

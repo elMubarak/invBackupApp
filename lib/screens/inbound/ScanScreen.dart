@@ -51,7 +51,7 @@ class _ScanScreenState extends State<ScanScreen> {
     });
   }
 
-  List<ReceiptItem> poList = [];
+  List<POItem> poList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -275,13 +275,13 @@ class _ScanScreenState extends State<ScanScreen> {
                   color: AppWhite,
                   border: Border(bottom: BorderSide(color: AppMediumGray))),
               child: ListTile(
-                title: Text(f.id.toString(),
+                title: Text(f.name.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .body2
                         .copyWith(fontSize: 15)),
-                subtitle:
-                    Text(f.name, style: Theme.of(context).textTheme.body1),
+                subtitle: Text(f.statusCode,
+                    style: Theme.of(context).textTheme.body1),
                 trailing: PopupMenuButton(
                   onSelected: (value) {
                     setState(() {
@@ -312,15 +312,15 @@ class _ScanScreenState extends State<ScanScreen> {
     });
   }
 
-  Widget _buildSinglePoItem(ReceiptItem f, int index) {
+  Widget _buildSinglePoItem(POItem f, int index) {
     return Container(
       decoration: BoxDecoration(
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.id.toString(),
+        title: Text(f.name.toString(),
             style: Theme.of(context).textTheme.body2.copyWith(fontSize: 15)),
-        subtitle: Text(f.name, style: Theme.of(context).textTheme.body1),
+        subtitle: Text(f.statusCode, style: Theme.of(context).textTheme.body1),
         trailing: PopupMenuButton(
           onSelected: (value) {
             _animatedListKey.currentState.removeItem(index,
@@ -342,7 +342,7 @@ class _ScanScreenState extends State<ScanScreen> {
     );
   }
 
-  Card _buildRemovedItem(int index, ReceiptItem f) {
+  Card _buildRemovedItem(int index, POItem f) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       color: Color(0xFF253B52),

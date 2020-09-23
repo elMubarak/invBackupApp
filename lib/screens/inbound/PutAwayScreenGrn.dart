@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:inventory_app/graphQL/requests.dart';
 import 'package:inventory_app/screens/utils/ClearableTextField.dart';
 import 'package:inventory_app/utils/app_colors.dart';
+import 'package:toast/toast.dart';
 
 class PutAwayScreenGrn extends StatefulWidget {
   @override
@@ -15,6 +20,7 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
   final List<POItem> poList = [];
 
   bool tileIsOpen = false;
+  var requests = Requests();
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +71,12 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
                             onPressed: () {
                               setState(() {
                                 poList.clear();
-                                poList.addAll([
-                                  POItem("A00001", "Google Chromecast"),
-                                  POItem("A00001", "Google Chromecast"),
-                                  POItem("A00001", "Google Chromecast"),
-                                ]);
+                                if (grnController.text.isEmpty) {
+                                  Toast.show(
+                                      "Enter Purchase Order number", context);
+                                } else {
+                                  showLoadingDialog();
+                                }
                               });
                             },
                             child: Text(
@@ -98,11 +105,11 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
                                 Text('${poList.length} items in GRN',
                                     style: TextStyle(
                                         color:
-                                        tileIsOpen ? Colors.white : null)),
+                                            tileIsOpen ? Colors.white : null)),
                                 Text('View',
                                     style: TextStyle(
                                         color:
-                                        tileIsOpen ? Colors.white : null)),
+                                            tileIsOpen ? Colors.white : null)),
                               ],
                             ),
                           ),
@@ -129,8 +136,8 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
                     color: AppDarkGreen,
                     onPressed: poList.length > 0
                         ? () {
-                      Navigator.of(context).pushNamed('/put-away');
-                    }
+                            Navigator.of(context).pushNamed('/put-away');
+                          }
                         : null,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4)),
@@ -154,28 +161,126 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
   List<Widget> _buildPoItems(List<POItem> items) {
     return items
         .map((f) => Container(
-      decoration: BoxDecoration(
-          color: AppWhite,
-          border: Border(bottom: BorderSide(color: AppMediumGray))),
-      child: ListTile(
-        title: Text(
-          f.ID,
-          style:
-          Theme.of(context).textTheme.body2.copyWith(fontSize: 15),
-        ),
-        subtitle: Text(
-          f.title,
-          style: Theme.of(context).textTheme.body1,
-        ),
-      ),
-    ))
+              decoration: BoxDecoration(
+                  color: AppWhite,
+                  border: Border(bottom: BorderSide(color: AppMediumGray))),
+              child: ListTile(
+                title: Text(
+                  "Name: ${f.name}",
+                  /*style:
+                      Theme.of(context).textTheme.body2.copyWith(fontSize: 15),*/
+                ),
+                subtitle: Text(
+                  f.description == null
+                      ? "Desc : NA"
+                      : "Desc: ${f.description}",
+                  //style: Theme.of(context).textTheme.body1,
+                ),
+                trailing: Text('Qty: ${f.qty}'),
+              ),
+            ))
         .toList();
+  }
+
+  void showLoadingDialog() {
+    var showLoader = false;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Query(
+          options: QueryOptions(
+            documentNode: gql(
+              requests.fetchPo(),
+            ),
+            variables: {
+              'poVar': {'poNo': grnController.text.toString()},
+            },
+          ),
+          builder: (QueryResult result,
+              {VoidCallback refetch, FetchMore fetchMore}) {
+            if (result.hasException) {
+              print("Exception:: ${result.exception.toString()}");
+              return AlertDialog(
+                content: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Purchase order ID not found',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            if (result.loading) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Container(
+                      height: 16,
+                    ),
+                    Center(
+                      child: Text(
+                        'Loading data, Please wait...',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // it can be either Map or List
+            //  print("Response: ${jsonEncode(result.data)}");
+            var data = result.data['goodsReceipts'];
+            var receipt = jsonEncode(data);
+            var jsonReceipt = jsonDecode(receipt);
+            print("Result: $receipt");
+            poList.clear();
+            for (int i = 0; i < jsonReceipt['data'].length; i++) {
+              POItem item = POItem.fromJson(jsonReceipt['data'][i]);
+              poList.add(item);
+            }
+            Navigator.of(context).pop();
+            return Container();
+          },
+        );
+      },
+    );
   }
 }
 
 class POItem {
-  final String ID;
-  final String title;
+  String name;
+  String sku;
+  String poNo;
+  String description;
+  String statusCode;
+  int qty;
+  int price;
+  int total;
+  // List<ReceiptItem> items = List();
 
-  POItem(this.ID, this.title);
+//  POItem(this.ID, this.title);
+  POItem.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    sku = json['sku'];
+    poNo = json['poNo'];
+    description = json['description'];
+    statusCode = json['statusCode'];
+    qty = json['qty'];
+    price = json['price'];
+    total = json['total'];
+    //var arr = json['items'];
+    /*for (int i = 0; i < arr.length; i++) {
+      ReceiptItem item = ReceiptItem.fromJson(arr[i]);
+      items.add(item);
+    }*/
+  }
 }

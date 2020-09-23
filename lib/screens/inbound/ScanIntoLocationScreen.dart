@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:inventory_app/graphQL/network.dart';
+import 'package:inventory_app/graphQL/requests.dart';
 import 'package:inventory_app/screens/inbound/ScanIntoLocationSuccessScreen.dart';
 import 'package:inventory_app/screens/utils/ClearableTextField.dart';
 import 'package:inventory_app/screens/utils/CustomOverlay.dart';
@@ -32,6 +37,8 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
   final _animatedListKey = GlobalKey<AnimatedListState>();
 
   final dynamic locationID;
+  var network = Network();
+  var requests = Requests();
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
@@ -71,7 +78,7 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
     });
   }
 
-  List<ReceiptItem> poList = [];
+  List<POItem> poList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -288,20 +295,20 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
     super.dispose();
   }
 
-  List<Widget> _buildPoItems(List<ReceiptItem> items) {
+  List<Widget> _buildPoItems(List<POItem> items) {
     return poList
         .map((f) => Container(
               decoration: BoxDecoration(
                   color: AppWhite,
                   border: Border(bottom: BorderSide(color: AppMediumGray))),
               child: ListTile(
-                title: Text(f.id.toString(),
+                title: Text(f.name.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .body2
                         .copyWith(fontSize: 15)),
-                subtitle:
-                    Text(f.name, style: Theme.of(context).textTheme.body1),
+                subtitle: Text(f.statusCode,
+                    style: Theme.of(context).textTheme.body1),
                 trailing: PopupMenuButton(
                   onSelected: (value) {
                     setState(() {
@@ -320,15 +327,15 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
         .toList();
   }
 
-  Widget _buildSinglePoItem(ReceiptItem f, int index) {
+  Widget _buildSinglePoItem(POItem f, int index) {
     return Container(
       decoration: BoxDecoration(
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.id.toString(),
+        title: Text(f.name.toString(),
             style: Theme.of(context).textTheme.body2.copyWith(fontSize: 15)),
-        subtitle: Text(f.name, style: Theme.of(context).textTheme.body1),
+        subtitle: Text(f.statusCode, style: Theme.of(context).textTheme.body1),
         trailing: PopupMenuButton(
           onSelected: (value) {
             _animatedListKey.currentState.removeItem(index,
@@ -350,7 +357,7 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
     );
   }
 
-  Card _buildRemovedItem(int index, ReceiptItem f) {
+  Card _buildRemovedItem(int index, POItem f) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       color: Color(0xFF253B52),
@@ -371,6 +378,79 @@ class _ScanIntoLocationScreenState extends State<ScanIntoLocationScreen> {
           );
         },
       ),
+    );
+  }
+
+  void showLoadingDialog() {
+    var showLoader = false;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Query(
+          options: QueryOptions(
+            documentNode: gql(
+              requests.getGrns(),
+            ),
+            variables: {
+              'poVar': {'poNo': "number here"},
+            },
+          ),
+          builder: (QueryResult result,
+              {VoidCallback refetch, FetchMore fetchMore}) {
+            if (result.hasException) {
+              print("Exception:: ${result.exception.toString()}");
+              return AlertDialog(
+                content: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Purchase order ID not found',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            if (result.loading) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Container(
+                      height: 16,
+                    ),
+                    Center(
+                      child: Text(
+                        'Loading data, Please wait...',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // it can be either Map or List
+            //  print("Response: ${jsonEncode(result.data)}");
+            var data = result.data['goodsReceipts'];
+            var receipt = jsonEncode(data);
+            var jsonReceipt = jsonDecode(receipt);
+            print("Result: $receipt");
+            poList.clear();
+            for (int i = 0; i < jsonReceipt['data'].length; i++) {
+              POItem item = POItem.fromJson(jsonReceipt['data'][i]);
+              poList.add(item);
+            }
+            Navigator.of(context).pop();
+            return Container();
+          },
+        );
+      },
     );
   }
 }
