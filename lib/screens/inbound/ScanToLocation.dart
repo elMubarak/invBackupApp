@@ -59,7 +59,10 @@ class _ScanToLocationScreenState extends State<ScanToLocationScreen> {
                           ),
                           padding: EdgeInsets.symmetric(
                               vertical: 15, horizontal: 50),
-                          child: Text("Location ID: ${locationID["id"]}", style: TextStyle(color: Color(0xFF146A58)),),
+                          child: Text(
+                            "Location ID: ${locationID["location"]['id']}",
+                            style: TextStyle(color: Color(0xFF146A58)),
+                          ),
                         ),
                       ),
                       Center(
@@ -75,7 +78,9 @@ class _ScanToLocationScreenState extends State<ScanToLocationScreen> {
                                 vertical: 12, horizontal: 16),
                             onPressed: () {
 //                              setState(() {});
-                            Navigator.of(context).pushNamed('/location-scan-items', arguments: {"id": locationID["id"]});
+                              Navigator.of(context).pushNamed(
+                                  '/location-scan-items',
+                                  arguments: {"id": locationID["id"]});
                             },
                             child: Text(
                               'Scan Items',
@@ -90,8 +95,7 @@ class _ScanToLocationScreenState extends State<ScanToLocationScreen> {
                       Center(
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * .7,
-                          child: Text(
-                              "You can also manually enter the Item ID",
+                          child: Text("You can also manually enter the Item ID",
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.body1),
                         ),
