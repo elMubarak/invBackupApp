@@ -17,7 +17,7 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
   String chosenType = "0";
   final grnController = TextEditingController();
 
-  final List<POItem> poList = [];
+  final List<ReceiptItem> poList = [];
 
   bool tileIsOpen = false;
   var requests = Requests();
@@ -158,7 +158,7 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
     );
   }
 
-  List<Widget> _buildPoItems(List<POItem> items) {
+  List<Widget> _buildPoItems(List<ReceiptItem> items) {
     return items
         .map((f) => Container(
               decoration: BoxDecoration(
@@ -176,7 +176,12 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
                       : "Desc: ${f.description}",
                   //style: Theme.of(context).textTheme.body1,
                 ),
-                trailing: Text('Qty: ${f.qty}'),
+                trailing: Column(
+                  children: <Widget>[
+                    Text('Sku: ${f.sku}'),
+                    Text('Qty: ${f.qty}'),
+                  ],
+                ),
               ),
             ))
         .toList();
@@ -190,10 +195,10 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
         return Query(
           options: QueryOptions(
             documentNode: gql(
-              requests.fetchPo(),
+              requests.getGrns(),
             ),
             variables: {
-              'poVar': {'poNo': grnController.text.toString()},
+              'filter': {'receiptNo': grnController.text.toString()},
             },
           ),
           builder: (QueryResult result,
@@ -245,7 +250,7 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
             poList.clear();
             for (int i = 0; i < jsonReceipt['data'].length; i++) {
               POItem item = POItem.fromJson(jsonReceipt['data'][i]);
-              poList.add(item);
+              poList.addAll(item.items);
             }
             Navigator.of(context).pop();
             return Container();
@@ -257,30 +262,33 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
 }
 
 class POItem {
-  String name;
-  String sku;
   String poNo;
-  String description;
-  String statusCode;
-  int qty;
-  int price;
-  int total;
-  // List<ReceiptItem> items = List();
+  List<ReceiptItem> items = List();
 
 //  POItem(this.ID, this.title);
   POItem.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    sku = json['sku'];
     poNo = json['poNo'];
-    description = json['description'];
-    statusCode = json['statusCode'];
-    qty = json['qty'];
-    price = json['price'];
-    total = json['total'];
-    //var arr = json['items'];
-    /*for (int i = 0; i < arr.length; i++) {
+    var arr = json['items'];
+    for (int i = 0; i < arr.length; i++) {
       ReceiptItem item = ReceiptItem.fromJson(arr[i]);
       items.add(item);
-    }*/
+    }
+  }
+}
+
+class ReceiptItem {
+  int id;
+  String name;
+  String sku;
+  int qty;
+  String description;
+
+//  POItem(this.ID, this.title);
+  ReceiptItem.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    sku = json['sku'];
+    qty = json['qty'];
   }
 }

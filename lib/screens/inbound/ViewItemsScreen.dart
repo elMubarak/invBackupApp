@@ -257,7 +257,12 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
                       : "Desc: ${f.description}",
                   //style: Theme.of(context).textTheme.body1,
                 ),
-                trailing: Text('Qty: ${f.qty}'),
+                trailing: Column(
+                  children: <Widget>[
+                    Text('Sku: ${f.sku}'),
+                    Text('Qty: ${f.qty}'),
+                  ],
+                ),
               ),
             ))
         .toList();

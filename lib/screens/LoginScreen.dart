@@ -151,10 +151,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   runMutation(
                                     {
                                       "authData": {
-                                        "email":
-                                            _usernameController.text.toString(),
-                                        "password":
-                                            _passwordController.text.toString()
+                                        "email": "ciadmin@c-ileasing.com",
+                                        //_usernameController.text.toString(),
+                                        "password": "@1234psl",
+                                        //_passwordController.text.toString()
                                       },
                                     },
                                   );
