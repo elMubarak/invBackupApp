@@ -9,6 +9,8 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CountScannerScreen extends StatefulWidget {
+
+
   @override
   _CountScannerScreenState createState() => _CountScannerScreenState();
 }

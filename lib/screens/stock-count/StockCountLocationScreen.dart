@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:inventory_app/graphQL/requests.dart';
 import 'package:inventory_app/screens/stock-count/CountScannerScreen.dart';
 import 'package:inventory_app/screens/stock-count/StockCountLocationScannerScreen.dart';
 import 'package:inventory_app/screens/utils/ClearableTextField.dart';
 import 'package:inventory_app/utils/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class StockCountLocationScreen extends StatefulWidget {
   final int countCycles;
@@ -19,7 +24,7 @@ class StockCountLocationScreen extends StatefulWidget {
 class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
   String chosenType = "0";
   final grnController = TextEditingController();
-
+  var requests = Requests();
   bool tileIsOpen = false;
 
   final int countCycles;
@@ -134,8 +139,13 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
                     elevation: 0,
                     color: AppDarkGreen,
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => CountScannerScreen()));
+                      if (grnController.text.isEmpty) {
+                        Toast.show("Enter location ID", context);
+                        return;
+                      }
+                      showLoadingDialog();
+//                      Navigator.of(context).push(MaterialPageRoute(
+//                          builder: (_) => CountScannerScreen()));
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4)),
@@ -153,6 +163,95 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void showLoadingDialog() {
+    var showLoader = false;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Query(
+          options: QueryOptions(
+            documentNode: gql(
+              requests.getWarehouseLocation(),
+            ),
+            variables: {
+              'filter': {'id': int.parse(grnController.text.toString())},
+            },
+          ),
+          builder: (QueryResult result,
+              {VoidCallback refetch, FetchMore fetchMore}) {
+            if (result.hasException) {
+              print("Exception:: ${result.exception.toString()}");
+              return AlertDialog(
+                content: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Error in getting data',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            if (result.loading) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Container(
+                      height: 16,
+                    ),
+                    Center(
+                      child: Text(
+                        'Loading data, Please wait...',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // it can be either Map or List
+            //  print("Response: ${jsonEncode(result.data)}");
+            var data = result.data['warehouseLocations'];
+            var receipt = jsonEncode(data);
+            var jsonReceipt = jsonDecode(receipt);
+            print("Result: $receipt");
+            var locations = jsonReceipt['data'];
+            if (locations.length == 0) {
+              return AlertDialog(
+                content: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Location ID not found',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            // result success
+            Navigator.of(context).pop();
+//            Navigator.of(context).pushNamed('/location-scan-entry',
+//                arguments: {"location": locations[0]});
+            Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => CountScannerScreen()));
+            return Container();
+          },
+        );
+      },
     );
   }
 }
