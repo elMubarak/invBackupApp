@@ -36,7 +36,7 @@ class _StockCountLocationScannerScreenState extends State<StockCountLocationScan
   void _onQRViewCreated(QRViewController controller) {
     this._controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CountScannerScreen()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CountScannerScreen(-1,"")));
     });
   }
 

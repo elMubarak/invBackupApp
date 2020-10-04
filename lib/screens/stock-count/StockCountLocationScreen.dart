@@ -247,7 +247,7 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
 //            Navigator.of(context).pushNamed('/location-scan-entry',
 //                arguments: {"location": locations[0]});
             Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => CountScannerScreen()));
+                          builder: (_) => CountScannerScreen(widget.countCycles,grnController.text.toString())));
             return Container();
           },
         );

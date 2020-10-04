@@ -78,6 +78,20 @@ class Requests {
     """;
   }
 
+  String countStock() {
+    return """
+    mutation createStockCount(\$filter:StockCountCreateInput!){
+  createStockCount(stockCountCreateInput:\$filter){
+    id
+    userId
+    warehouseLocationId
+    sku
+    qty
+  }
+}
+    """;
+  }
+
   String getWarehouseLocation() {
     return """
     query getWhareHouseLocation(\$filter:WarehouseLocationFetchInput){
