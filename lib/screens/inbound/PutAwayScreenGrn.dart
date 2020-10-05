@@ -136,7 +136,8 @@ class _PutAwayScreenGrnState extends State<PutAwayScreenGrn> {
                     color: AppDarkGreen,
                     onPressed: poList.length > 0
                         ? () {
-                            Navigator.of(context).pushNamed('/put-away');
+                            Navigator.of(context).pushNamed('/put-away',
+                                arguments: {"items": poList});
                           }
                         : null,
                     shape: RoundedRectangleBorder(
@@ -290,5 +291,15 @@ class ReceiptItem {
     description = json['description'];
     sku = json['sku'];
     qty = json['qty'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': this.id,
+      'name': this.name,
+      'description': this.description,
+      'sku': this.sku,
+      'qty': this.qty,
+    };
   }
 }

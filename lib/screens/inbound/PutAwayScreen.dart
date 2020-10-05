@@ -11,17 +11,21 @@ import 'package:inventory_app/utils/app_colors.dart';
 import 'package:toast/toast.dart';
 
 class PutAwayScreen extends StatefulWidget {
+  final dynamic data;
+  const PutAwayScreen({Key key, this.data}) : super(key: key);
+
   @override
-  _PutAwayScreenState createState() => _PutAwayScreenState();
+  _PutAwayScreenState createState() => _PutAwayScreenState(this.data);
 }
 
 class _PutAwayScreenState extends State<PutAwayScreen> {
   String chosenType = "0";
   final grnController = TextEditingController();
-
+  final dynamic data;
   bool tileIsOpen = false;
-
   var requests = Requests();
+
+  _PutAwayScreenState(this.data);
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +129,7 @@ class _PutAwayScreenState extends State<PutAwayScreen> {
                         Toast.show("Enter location ID", context);
                         return;
                       }
-                      showLoadingDialog();
+                      showLoadingDialog(data['items']);
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4)),
@@ -146,7 +150,7 @@ class _PutAwayScreenState extends State<PutAwayScreen> {
     );
   }
 
-  void showLoadingDialog() {
+  void showLoadingDialog(items) {
     var showLoader = false;
     showDialog(
       context: context,
@@ -224,9 +228,14 @@ class _PutAwayScreenState extends State<PutAwayScreen> {
 
             // result success
             Future.delayed(Duration.zero, () {
+              print("ITEMS: ${jsonEncode(items)}");
+
               Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/location-scan-entry',
-                  arguments: {"location": locations[0]});
+              Navigator.of(context)
+                  .pushNamed('/location-scan-entry', arguments: {
+                "location": locations[0],
+                "data": items,
+              });
             });
 
             return Container();
