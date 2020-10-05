@@ -228,17 +228,17 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
             var data2 = result.data['warehouseLocations']['data'];
             var receipt = jsonEncode(data);
             var jsonReceipt = jsonDecode(receipt);
-         var receipt2 = jsonEncode(data2[0]['items']);
+            var receipt2 = jsonEncode(data2[0]['items']);
             var jsonReceipt2 = jsonDecode(receipt2);
             print("Result: $receipt");
             var locations = jsonReceipt['data'];
 
             List<ItemModel> temp4 = [];
-      for (int i = 0; i < jsonReceipt2.length; i++) {
-        ItemModel result = ItemModel(jsonReceipt2[i]);
-        temp4.add(result);
-      }
-           // ItemModel.fromJson(json.decode(locations));
+            for (int i = 0; i < jsonReceipt2.length; i++) {
+              ItemModel result = ItemModel(jsonReceipt2[i]);
+              temp4.add(result);
+            }
+            // ItemModel.fromJson(json.decode(locations));
             if (locations.length == 0) {
               return AlertDialog(
                 content: Container(
@@ -258,9 +258,13 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
             // Navigator.of(context).pop();
 //            Navigator.of(context).pushNamed('/location-scan-entry',
 //                arguments: {"location": locations[0]});
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => CountScannerScreen(
-                    widget.countCycles, grnController.text.toString(),temp4)));
+            Future.delayed(Duration.zero, () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => CountScannerScreen(widget.countCycles,
+                      grnController.text.toString(), temp4)));
+            });
+
             return Container();
           },
         );
