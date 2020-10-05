@@ -81,14 +81,29 @@ class Requests {
   String countStock() {
     return """
     mutation createStockCount(\$filter:StockCountCreateInput!){
-  createStockCount(stockCountCreateInput:\$filter){
-    id
-    userId
-    warehouseLocationId
-    sku
-    qty
+      createStockCount(stockCountCreateInput:\$filter){
+        id
+        userId
+        warehouseLocationId
+        sku
+        qty
+      }
+    }
+    """;
   }
-}
+
+  String addItemToLocation() {
+    return """
+    mutation addWarehouseLocationItem(\$item:WarehouseLocationItemCreateInput!){
+      addWarehouseLocationItem(warehouseLocationItemCreateInput: \$item){
+        id
+        warehouseLocationId
+        sku
+        name
+        qty
+        description
+      }
+    }
     """;
   }
 
@@ -103,6 +118,13 @@ class Requests {
             id
             name
             address
+          }
+          items{
+            id
+            name
+            sku
+            qty
+            description
           }
         }
 	    }
