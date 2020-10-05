@@ -233,7 +233,7 @@ class _CountSuccessScreenState extends State<CountSuccessScreen> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => CountScannerScreen(-1,"",""),
+                                    builder: (_) => CountScannerScreen(cycles,countDetails["locationId"],countDetails["items"]),
                                   ),
                                 );
                               },

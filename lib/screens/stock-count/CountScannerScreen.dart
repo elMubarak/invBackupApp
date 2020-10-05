@@ -293,21 +293,12 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                       if (currentCycle < cycles) {
                         setState(() {
                           currentCycle++;
-                          //itemsCount=temp.length;
+                          itemsCount=temp.length;
                         });
 
                       }
                       _controllerItem.clear();
-//                      runMutation(
-//                          {
-//                            "filter": {
-//                              "warehouseLocationId": int.parse(
-//                                  widget.locationId),
-//                              "sku": _controllerItem.text.toString(),
-//                              "qty": widget.countCycles
-//                            }
-//                          }
-//                      );
+
                     },
                     child: Text(
                       'Submit Item ID',
@@ -326,7 +317,36 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
           );
         },
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: Mutation(
+          options: MutationOptions(
+            documentNode: gql(
+              requests.countStock(),
+            ),
+            update: (Cache cache, QueryResult result) {
+              return cache;
+            },
+            onCompleted: (dynamic result) {
+              var data = jsonEncode(result);
+              print("On Complete countStock : ${jsonEncode(result)}");
+              var newResult = jsonDecode(data);
+
+              _controllerItem.clear();
+              // shown==0?showAlertDialog( context):Container();
+
+//
+//              if (currentCycle >= cycles) {
+//                Navigator.of(context).pushReplacementNamed('/home');
+//              } else {
+//                Toast.show(_controllerItem.text.toString()+' in Location ID ${widget.locationId} is successful.', context);
+//
+//              }
+            },
+          ),
+          builder: (RunMutation runMutation, QueryResult result) {
+            if (result.hasException) {
+              Toast.show("Please check network connection", context);
+            }
+            return Container(
         color: Colors.grey[100],
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
@@ -356,6 +376,16 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                 ),
                 RaisedButton(
                   onPressed: () {
+                    runMutation(
+                          {
+                            "filter": {
+                              "warehouseLocationId": int.parse(
+                                  widget.locationId),
+                              "sku": _controllerItem.text.toString(),
+                              "qty": widget.countCycles
+                            }
+                          }
+                      );
                     Navigator.of(context).pop();
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
@@ -363,7 +393,9 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                             CountSuccessScreen(
                               countDetails: {
                                 'total': widget.items.length,
-                                'counted': itemsCount
+                                'counted': itemsCount,
+                                'locationId': widget.locationId,
+                                'items': widget.items,
                               },
                             ),
                       ),
@@ -385,7 +417,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                 ),
                 TextSpan(text: ' items in Location ID: '),
                 TextSpan(
-                  text: '1234ASDF12SK.',
+                  text: widget.locationId.toString(),
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
                 TextSpan(
@@ -406,7 +438,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                 .copyWith(color: AppWhite),
           ),
         ),
-      ),),
+      );})),
     );
   }
 
