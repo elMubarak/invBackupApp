@@ -40,6 +40,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
   var qrText = "";
   int itemsCount = 0;
   int shown = 0;
+  List<ItemModel> temp=List();
 //  List<POItem> poList = [
 //    POItem('001', 'Google Chromecast'),
 //    POItem('002', 'Google Chromecast'),
@@ -66,7 +67,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       cycles = prefs.getInt("countCycles") ?? 2;
-      currentCycle = prefs.getInt("currentCycle") ?? 1;
+      currentCycle = prefs.getInt("currentCycle") ?? 0;
     });
   }
 
@@ -103,9 +104,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
             var data = jsonEncode(result);
             print("On Complete countStock : ${jsonEncode(result)}");
             var newResult = jsonDecode(data);
-    if (currentCycle < cycles) {
-      currentCycle++;
-    }
+
             _controllerItem.clear();
             // shown==0?showAlertDialog( context):Container();
 
@@ -277,16 +276,38 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4)),
                     onPressed: () {
-                      runMutation(
-                          {
-                            "filter": {
-                              "warehouseLocationId": int.parse(
-                                  widget.locationId),
-                              "sku": _controllerItem.text.toString(),
-                              "qty": widget.countCycles
-                            }
-                          }
-                      );
+                      if(temp.length>0){
+                        temp.clear();
+                      }
+                      var exist=0;
+                      for(int i=0;i<widget.items.length;i++){
+                        if(_controllerItem.text.toString()==widget.items[i].id){
+                          exist=1;
+                          temp.add(widget.items[i]);
+                        }
+                      }
+                      if(exist==0){
+                        Toast.show("Item ID does not exist.", context);
+                        return;
+                      }
+                      if (currentCycle < cycles) {
+                        setState(() {
+                          currentCycle++;
+                          //itemsCount=temp.length;
+                        });
+
+                      }
+                      _controllerItem.clear();
+//                      runMutation(
+//                          {
+//                            "filter": {
+//                              "warehouseLocationId": int.parse(
+//                                  widget.locationId),
+//                              "sku": _controllerItem.text.toString(),
+//                              "qty": widget.countCycles
+//                            }
+//                          }
+//                      );
                     },
                     child: Text(
                       'Submit Item ID',
@@ -395,34 +416,57 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.id,
+        title: Text(f.name,
             style: Theme
                 .of(context)
                 .textTheme
                 .body2
                 .copyWith(fontSize: 15)),
-        subtitle: Text(f.name, style: Theme
+        subtitle: Text(f.description, style: Theme
             .of(context)
             .textTheme
-            .body1),
-        trailing: PopupMenuButton(
-          onSelected: (value) {
-            _animatedListKey.currentState.removeItem(index,
-                    (context, animation) {
-                  return _buildRemovedItem(index, f);
-                }, duration: Duration(seconds: 1));
-            setState(() {
-              widget.items.remove(f);
-            });
-          },
-          itemBuilder: (_) =>
-          <PopupMenuEntry<String>>[
-            const PopupMenuItem(
-              child: Text('Undo Item Scan'),
-              value: 'delete',
-            )
-          ],
-        ),
+            .body1
+            .copyWith(fontSize: 12)),
+        trailing:Container(child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('Sku: ${f.sku}', style: Theme
+                  .of(context)
+                  .textTheme
+                  .body1
+                  .copyWith(fontSize: 12)),
+              Text('Qty: ${f.qty}', style: Theme
+                  .of(context)
+                  .textTheme
+                  .body1
+                  .copyWith(fontSize: 12)),
+            ],
+          ),
+          PopupMenuButton(
+            onSelected: (value) {
+              _animatedListKey.currentState.removeItem(index,
+                      (context, animation) {
+                    return _buildRemovedItem(index, f);
+                  }, duration: Duration(seconds: 1));
+              setState(() {
+                widget.items.remove(f);
+              });
+            },
+            itemBuilder: (_) =>
+            <PopupMenuEntry<String>>[
+              const PopupMenuItem(
+                child: Text('Undo Item Scan'),
+                value: 'delete',
+              )
+            ],
+          ),
+        ],),)
       ),
     );
   }
