@@ -12,6 +12,8 @@ import 'package:inventory_app/utils/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
+import 'ItemModel.dart';
+
 class StockCountLocationScreen extends StatefulWidget {
   final int countCycles;
 
@@ -223,10 +225,20 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
             // it can be either Map or List
             //  print("Response: ${jsonEncode(result.data)}");
             var data = result.data['warehouseLocations'];
+            var data2 = result.data['warehouseLocations']['data'];
             var receipt = jsonEncode(data);
             var jsonReceipt = jsonDecode(receipt);
+         var receipt2 = jsonEncode(data2[0]['items']);
+            var jsonReceipt2 = jsonDecode(receipt2);
             print("Result: $receipt");
             var locations = jsonReceipt['data'];
+
+            List<ItemModel> temp4 = [];
+      for (int i = 0; i < jsonReceipt2.length; i++) {
+        ItemModel result = ItemModel(jsonReceipt2[i]);
+        temp4.add(result);
+      }
+           // ItemModel.fromJson(json.decode(locations));
             if (locations.length == 0) {
               return AlertDialog(
                 content: Container(
@@ -248,7 +260,7 @@ class _StockCountLocationScreenState extends State<StockCountLocationScreen> {
 //                arguments: {"location": locations[0]});
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => CountScannerScreen(
-                    widget.countCycles, grnController.text.toString())));
+                    widget.countCycles, grnController.text.toString(),temp4)));
             return Container();
           },
         );

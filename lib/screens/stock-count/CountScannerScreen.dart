@@ -15,13 +15,16 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
+import 'ItemModel.dart';
+
 class CountScannerScreen extends StatefulWidget {
   int countCycles = 0;
   String locationId = "";
-
-  CountScannerScreen(int countCycles, String locationId) {
+  List<ItemModel> items;
+  CountScannerScreen(int countCycles, String locationId, items) {
     this.countCycles = countCycles;
     this.locationId = locationId;
+    this.items=items;
   }
 
 
@@ -37,16 +40,16 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
   var qrText = "";
   int itemsCount = 0;
   int shown = 0;
-  List<POItem> poList = [
-    POItem('001', 'Google Chromecast'),
-    POItem('002', 'Google Chromecast'),
-    POItem('003', 'Google Chromecast'),
-    POItem('004', 'Google Chromecast'),
-    POItem('005', 'Google Chromecast'),
-    POItem('006', 'Google Chromecast'),
-    POItem('007', 'Google Chromecast'),
-    POItem('008', 'Google Chromecast'),
-  ];
+//  List<POItem> poList = [
+//    POItem('001', 'Google Chromecast'),
+//    POItem('002', 'Google Chromecast'),
+//    POItem('003', 'Google Chromecast'),
+//    POItem('004', 'Google Chromecast'),
+//    POItem('005', 'Google Chromecast'),
+//    POItem('006', 'Google Chromecast'),
+//    POItem('007', 'Google Chromecast'),
+//    POItem('008', 'Google Chromecast'),
+//  ];
   var network = Network();
   var requests = Requests();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -74,7 +77,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
 
       setState(() {
         qrText = scanData;
-        itemsCount = itemsCount < poList.length ? itemsCount + 1 : itemsCount;
+        itemsCount = itemsCount < widget.items.length ? itemsCount + 1 : itemsCount;
       });
 
       Future.delayed(Duration(milliseconds: 1500), () {
@@ -156,7 +159,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(3),
                       border: Border.all(color: Colors.grey[300]),
-                      color: poList.length > 0
+                      color: widget.items.length > 0
                           ? tileIsOpen ? Color(0xFF839AB0) : Colors.white
                           : Colors.grey[300],
                     ),
@@ -169,7 +172,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                               TextSpan(
                                 children: <InlineSpan>[
                                   TextSpan(
-                                    text: '${poList.length}',
+                                    text: '${widget.items.length}',
                                     style: Theme
                                         .of(context)
                                         .textTheme
@@ -215,10 +218,10 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                                 begin: const Offset(-1, 0),
                                 end: Offset.zero,
                               ).animate(animation),
-                              child: _buildSinglePoItem(poList[index], index),
+                              child: _buildSinglePoItem(widget.items[index], index),
                             );
                           },
-                          initialItemCount: poList.length,
+                          initialItemCount: widget.items.length,
                         )
                       ],
                       onExpansionChanged: (isOpen) {
@@ -310,7 +313,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
           padding: EdgeInsets.symmetric(vertical: 16),
           elevation: 0,
           color: AppDarkGreen,
-          onPressed: poList.length > 0
+          onPressed: widget.items.length > 0
               ? () {
 //                  Navigator.of(context).pushNamed('/scanner');
             DialogUtils.showCustomDialog(
@@ -338,7 +341,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                         builder: (_) =>
                             CountSuccessScreen(
                               countDetails: {
-                                'total': poList.length,
+                                'total': widget.items.length,
                                 'counted': itemsCount
                               },
                             ),
@@ -386,19 +389,19 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
     );
   }
 
-  Widget _buildSinglePoItem(POItem f, int index) {
+  Widget _buildSinglePoItem(ItemModel f, int index) {
     return Container(
       decoration: BoxDecoration(
           color: AppWhite,
           border: Border(bottom: BorderSide(color: AppMediumGray))),
       child: ListTile(
-        title: Text(f.ID,
+        title: Text(f.id,
             style: Theme
                 .of(context)
                 .textTheme
                 .body2
                 .copyWith(fontSize: 15)),
-        subtitle: Text(f.title, style: Theme
+        subtitle: Text(f.name, style: Theme
             .of(context)
             .textTheme
             .body1),
@@ -409,7 +412,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
                   return _buildRemovedItem(index, f);
                 }, duration: Duration(seconds: 1));
             setState(() {
-              poList.remove(f);
+              widget.items.remove(f);
             });
           },
           itemBuilder: (_) =>
@@ -424,7 +427,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
     );
   }
 
-  Card _buildRemovedItem(int index, POItem f) {
+  Card _buildRemovedItem(int index, ItemModel f) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       color: Color(0xFF253B52),
@@ -437,7 +440,7 @@ class _CountScannerScreenState extends State<CountScannerScreen> {
         ),
         onTap: () {
           setState(() {
-            poList.insert(index, f);
+            widget.items.insert(index, f);
           });
           _animatedListKey.currentState.insertItem(
             index,
