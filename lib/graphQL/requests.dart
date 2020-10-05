@@ -109,4 +109,32 @@ class Requests {
     }
     """;
   }
+
+  String getLocationItems() {
+    return """
+    query getLocationItem(\$filter:WarehouseLocationItemFetchInput!){
+      warehouseLocationItems(warehouseLocationItemFetchInput:\$filter){
+    
+        data{
+          warehouseLocationId
+          id
+          name
+          sku
+          description
+          qty
+      
+          warehouseLocation{
+            id
+            name
+          }
+        }
+        page
+        count
+        pages
+    
+      }
+  
+    }
+    """;
+  }
 }
