@@ -223,9 +223,11 @@ class _PutAwayScreenState extends State<PutAwayScreen> {
             }
 
             // result success
-            Navigator.of(context).pop();
-            Navigator.of(context).pushNamed('/location-scan-entry',
-                arguments: {"location": locations[0]});
+            Future.delayed(Duration.zero, () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed('/location-scan-entry',
+                  arguments: {"location": locations[0]});
+            });
 
             return Container();
           },

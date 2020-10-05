@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:inventory_app/screens/outbound/OutboundItemsScannerScreen.dart';
 import 'package:inventory_app/screens/utils/ClearableTextField.dart';
 import 'package:inventory_app/screens/utils/CustomOverlay.dart';
@@ -24,7 +23,7 @@ class _OutboundLocationScannerScreenState
     this._controller = controller;
     controller.scannedDataStream.listen((scanData) async {
       _controller.pauseCamera();
-     await Navigator.of(context).push(
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ScanOutboundItemsScreenScreen(),
         ),
@@ -114,8 +113,10 @@ class _OutboundLocationScannerScreenState
                     elevation: 0,
                     color: AppDarkGreen,
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => ScanOutboundItemsScreenScreen()));
+                      Future.delayed(Duration.zero, () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => ScanOutboundItemsScreenScreen()));
+                      });
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4)),

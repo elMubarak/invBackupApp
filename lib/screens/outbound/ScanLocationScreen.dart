@@ -220,9 +220,12 @@ class _ScanLocationScreenOutboundState
             }
 
             // result success
-            Navigator.of(context).pop();
-            Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => ScanOutboundItemsScreenScreen()));
+            Future.delayed(Duration.zero, () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => ScanOutboundItemsScreenScreen()));
+            });
+
 //            Navigator.of(context).pushNamed('/location-scan-entry',
 //                arguments: {"location": locations[0]});
 
