@@ -43,7 +43,7 @@ class _SingleItemScannerScreenState extends State<SingleItemScannerScreen>
   @override
   void initState() {
     super.initState();
-
+//
     anim = AnimationController(
         animationBehavior: AnimationBehavior.normal,
         vsync: this,
