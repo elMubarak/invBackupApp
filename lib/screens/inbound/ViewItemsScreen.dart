@@ -21,6 +21,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
 
   final List<POItem> poList = [];
 
+
   bool tileIsOpen = false;
   var network = Network();
   var requests = Requests();

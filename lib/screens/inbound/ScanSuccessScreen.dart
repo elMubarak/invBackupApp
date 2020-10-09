@@ -4,6 +4,11 @@ import 'package:inventory_app/screens/utils/CustomRaisedButton.dart';
 import 'package:inventory_app/utils/app_colors.dart';
 
 class ScanSuccessScreen extends StatefulWidget {
+  int length;
+  ScanSuccessScreen(int length){
+    this.length=length;
+  }
+
   @override
   _ScanSuccessScreenState createState() => _ScanSuccessScreenState();
 }

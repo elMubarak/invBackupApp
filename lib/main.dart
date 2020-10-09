@@ -1,11 +1,15 @@
+
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:inventory_app/providers/User.dart';
 import 'package:inventory_app/screens/SplashScreen.dart';
-import 'package:inventory_app/utils/Router.dart';
 import 'package:inventory_app/utils/app_colors.dart';
 import 'package:inventory_app/utils/links.dart';
 import 'package:provider/provider.dart';
+import 'package:inventory_app/utils/Router.dart';
+
 
 void main() => runApp(MultiProvider(
       providers: [
@@ -70,7 +74,7 @@ class HomePage extends StatelessWidget {
               caption:
                   TextStyle(color: TextColor, fontWeight: FontWeight.w400))),
 //      home: MyHomePage(title: 'Home'),
-      onGenerateRoute: Router.generateRoute,
+      onGenerateRoute: Routers.generateRoute,
       onUnknownRoute: (_) => MaterialPageRoute(builder: (_) => SplashScreen()),
     );
   }

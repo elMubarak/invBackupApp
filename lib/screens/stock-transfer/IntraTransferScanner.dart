@@ -7,6 +7,7 @@ import 'package:inventory_app/screens/utils/CustomRaisedButton.dart';
 import 'package:inventory_app/screens/utils/ExpandableListItem.dart';
 import 'package:inventory_app/utils/app_colors.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:toast/toast.dart';
 
 class IntraTransferScannerScreen extends StatefulWidget {
   const IntraTransferScannerScreen({Key key}) : super(key: key);
@@ -28,6 +29,7 @@ class _IntraTransferScannerScreenState
   QRViewController _controller;
   bool tileIsOpen = false;
   String itemId;
+  String myItemId;
 
   final _animatedListKey = GlobalKey<AnimatedListState>();
 
@@ -59,6 +61,7 @@ class _IntraTransferScannerScreenState
 
       setState(() {
         qrText = scanData;
+        myItemId = scanData;
       });
 
       Future.delayed(Duration(seconds: 2), () {
@@ -113,7 +116,7 @@ class _IntraTransferScannerScreenState
                 ),
               ),
             ),
-            Padding(
+            1<0? Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Container(
                 decoration: BoxDecoration(
@@ -162,7 +165,7 @@ class _IntraTransferScannerScreenState
                   },
                 ),
               ),
-            ),
+            ):Container(),
             SizedBox(height: 25),
             Center(
               child: SizedBox(
@@ -185,6 +188,7 @@ class _IntraTransferScannerScreenState
             Center(
                 child: CustomRaisedButton(
               onTap: () {
+                myItemId=itemIdController.text.toString();
                 poList.add(POItem("000123067", 'Google Chromecast'));
                 _animatedListKey.currentState
                     ?.insertItem(0, duration: Duration(milliseconds: 500));
@@ -207,11 +211,18 @@ class _IntraTransferScannerScreenState
           onPressed: poList.length > 0
               ? () {
 //                  Navigator.of(context).pushNamed('/scanner');
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => IntraTransferLocation(),
-                    ),
-                  );
+          if(myItemId.isEmpty){
+            Toast.show(
+                "Enter Item ID", context,
+                duration: Toast.LENGTH_SHORT,
+                gravity: Toast.BOTTOM);
+          }else {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => IntraTransferLocation(myItemId),
+              ),
+            );
+          }
                 }
               : null,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),

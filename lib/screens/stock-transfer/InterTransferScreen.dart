@@ -65,7 +65,7 @@ class _InterTransferScreenState extends State<InterTransferScreen> {
                         ),
                       ),
                     ),
-                    Padding(
+                   1<0? Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20.0),
                       child: Center(
                         child: SizedBox(
@@ -76,8 +76,8 @@ class _InterTransferScreenState extends State<InterTransferScreen> {
                           ),
                         ),
                       ),
-                    ),
-                    Center(
+                    ):Container(),
+                    1<0? Center(
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * .82,
                         child: ClearableTextField(
@@ -85,8 +85,8 @@ class _InterTransferScreenState extends State<InterTransferScreen> {
                           label: "Item ID",
                         ),
                       ),
-                    ),
-                    Padding(
+                    ):Container(),
+                    1<0? Padding(
                       padding: EdgeInsets.symmetric(vertical: 30),
                       child: Center(
                         child: RaisedButton(
@@ -107,7 +107,7 @@ class _InterTransferScreenState extends State<InterTransferScreen> {
                           ),
                         ),
                       ),
-                    ),
+                    ):Container(),
 //                    SizedBox(height: MediaQuery.of(context).size.height * .1),
                   ],
                 ),

@@ -21,7 +21,7 @@ import 'package:inventory_app/screens/stock-transfer/StockTransferScreen.dart';
 
 const initialRoute = '/';
 
-class Router {
+class Routers {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case initialRoute:
@@ -64,7 +64,7 @@ class Router {
                   locationID: settings.arguments,
                 ));
       case '/scanner-success':
-        return MaterialPageRoute(builder: (_) => ScanSuccessScreen());
+        return MaterialPageRoute(builder: (_) => ScanSuccessScreen(0));
       case '/outbound-ticket':
         return MaterialPageRoute(builder: (_) => OutboundTicketScreen());
       case '/outbound-location-scan':

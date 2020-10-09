@@ -42,6 +42,17 @@ class Requests {
     }
     """;
   }
+ String getLocation() {
+    return """
+    query getLocations(\$filter:WarehouseLocationFetchInput){
+  warehouseLocations(warehouseLocationFetchInput:\$filter){
+    data{
+      name
+    }
+  }
+}
+    """;
+  }
 
   // Active now
   String fetchPo() {

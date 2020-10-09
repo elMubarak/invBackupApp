@@ -31,7 +31,7 @@ class _ScanScreenState extends State<ScanScreen> {
   var cameraState = front_camera;
   QRViewController _controller;
   bool tileIsOpen = false;
-
+  final List<POItem> poList2 = [];
   final _animatedListKey = GlobalKey<AnimatedListState>();
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -66,6 +66,22 @@ class _ScanScreenState extends State<ScanScreen> {
 
       setState(() {
         qrText = scanData;
+        var enteredSku = qrText.toString().trim();
+        for (POItem item in poList) {
+          if (item.sku == enteredSku) {
+            selectedItem = item;
+            break;
+          }
+        }
+
+        if (selectedItem == null) {
+          Toast.show("Item sku not foud in selected list", context);
+        } else {
+          Toast.show(
+              "SKU matched, Please complete process.", context);
+          poList2.add(selectedItem);
+        }
+
       });
       Future.delayed(Duration(seconds: 1), () {
         _controller.resumeCamera();
@@ -207,6 +223,7 @@ class _ScanScreenState extends State<ScanScreen> {
                     } else {
                       Toast.show(
                           "SKU matched, Please complete process.", context);
+                      poList2.add(selectedItem);
                     }
                   });
                 },
@@ -254,7 +271,7 @@ class _ScanScreenState extends State<ScanScreen> {
 //                                _controller.pauseCamera();
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (_) => ScanSuccessScreen()));
+                                        builder: (_) => ScanSuccessScreen(poList2.length)));
                               },
                               color: Color(0xFF239374),
                               child: Text('I agree'),
@@ -267,7 +284,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             TextSpan(text: '\n\n'),
                             TextSpan(text: 'You have scanned'),
                             TextSpan(
-                              text: ' ${poList.length} of ${poList.length}',
+                              text: ' ${poList2.length} of ${poList.length}',
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
                             TextSpan(text: ' items from the P.O ID.'),
@@ -276,7 +293,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                     'have accepted these items.'),
                             TextSpan(text: '\n\n'),
                             TextSpan(
-                              text: '0 Outstanding items',
+                              text: ""+((poList.length)-(poList2.length)).toString()+' Outstanding items',
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
                           ],
