@@ -1,16 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:inventory_app/screens/inbound/ScanSuccessScreen.dart';
 import 'package:inventory_app/screens/utils/ClearableTextField.dart';
 import 'package:inventory_app/screens/utils/CustomOverlay.dart';
 import 'package:inventory_app/screens/utils/DialogUtils.dart';
+import 'package:inventory_app/utils/Constants.dart';
 import 'package:inventory_app/utils/app_colors.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:toast/toast.dart';
 
 import 'ViewItemsScreen.dart';
 
 class ScanScreen extends StatefulWidget {
+  final dynamic data;
+  const ScanScreen({Key key, this.data}) : super(key: key);
+
   @override
-  _ScanScreenState createState() => _ScanScreenState();
+  _ScanScreenState createState() => _ScanScreenState(this.data);
 }
 
 const flash_on = "FLASH ON";
@@ -30,6 +37,22 @@ class _ScanScreenState extends State<ScanScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
   bool showingScanSuccess = false;
+  final dynamic data;
+
+  var skuController = TextEditingController();
+
+  POItem selectedItem;
+
+  _ScanScreenState(this.data);
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      print("ITEMS: ${jsonEncode(data['items'])}");
+      poList.addAll(data['items']);
+    });
+  }
 
   void _onQRViewCreated(QRViewController controller) {
     this._controller = controller;
@@ -44,7 +67,6 @@ class _ScanScreenState extends State<ScanScreen> {
       setState(() {
         qrText = scanData;
       });
-
       Future.delayed(Duration(seconds: 1), () {
         _controller.resumeCamera();
       });
@@ -121,8 +143,8 @@ class _ScanScreenState extends State<ScanScreen> {
                       ],
                     ),
                   ),
-//                  children: _buildPoItems(poList),
-                  children: <Widget>[
+                  children: _buildPoItems(poList),
+                  /*children: <Widget>[
                     AnimatedList(
                       shrinkWrap: true,
                       key: _animatedListKey,
@@ -137,7 +159,7 @@ class _ScanScreenState extends State<ScanScreen> {
                       },
                       initialItemCount: poList.length,
                     )
-                  ],
+                  ],*/
                   onExpansionChanged: (isOpen) {
                     setState(() {
                       tileIsOpen = isOpen;
@@ -160,7 +182,7 @@ class _ScanScreenState extends State<ScanScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 35.0),
               child: ClearableTextField(
-                textEditingController: TextEditingController(),
+                textEditingController: skuController,
                 label: 'Item ID',
               ),
             ),
@@ -170,7 +192,24 @@ class _ScanScreenState extends State<ScanScreen> {
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4)),
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    var enteredSku = skuController.text.toString().trim();
+                    for (POItem item in poList) {
+                      if (item.sku == enteredSku) {
+                        selectedItem = item;
+                        break;
+                      }
+                    }
+
+                    if (selectedItem == null) {
+                      Toast.show("Item sku not foud in selected list", context);
+                    } else {
+                      Toast.show(
+                          "SKU matched, Please complete process.", context);
+                    }
+                  });
+                },
                 child: Text(
                   'Submit Item ID',
                   style: Theme.of(context)
@@ -224,7 +263,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             ),
                           ],
                           dialogBody: <TextSpan>[
-                            TextSpan(text: 'Hey Abayomi,'),
+                            TextSpan(text: 'Hey ${Constants.contactName},'),
                             TextSpan(text: '\n\n'),
                             TextSpan(text: 'You have scanned'),
                             TextSpan(

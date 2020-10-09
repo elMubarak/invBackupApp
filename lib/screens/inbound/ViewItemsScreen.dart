@@ -221,7 +221,8 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
               color: AppDarkGreen,
               onPressed: poList.length > 0
                   ? () {
-                      Navigator.of(context).pushNamed('/scanner');
+                      Navigator.of(context)
+                          .pushNamed('/scanner', arguments: {"items": poList});
                     }
                   : null,
               shape: RoundedRectangleBorder(
@@ -435,6 +436,18 @@ class POItem {
       ReceiptItem item = ReceiptItem.fromJson(arr[i]);
       items.add(item);
     }*/
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'name': this.name,
+      'description': this.description,
+      'sku': this.sku,
+      'qty': this.qty,
+      'poNo': this.poNo,
+      'statusCode': this.statusCode,
+      'price': this.price,
+      'total': this.total,
+    };
   }
 }
 

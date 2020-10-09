@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:inventory_app/graphQL/requests.dart';
 import 'package:inventory_app/screens/utils/BottomClipper.dart';
+import 'package:inventory_app/utils/Constants.dart';
 import 'package:inventory_app/utils/app_colors.dart';
 import 'package:toast/toast.dart';
 
@@ -37,6 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
               print("On Complete : ${jsonEncode(result)}");
               var newResult = jsonDecode(data);
               var email = newResult['authenticate']['email'];
+              setState(() {
+                Constants.contactName =
+                    newResult['authenticate']['contactName'];
+              });
               if (email == null) {
                 Toast.show("Please check credentials", context);
               } else {

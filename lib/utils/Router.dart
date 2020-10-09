@@ -37,7 +37,10 @@ class Router {
       case '/view-items':
         return MaterialPageRoute(builder: (_) => ViewItemsScreen());
       case '/scanner':
-        return MaterialPageRoute(builder: (_) => ScanScreen());
+        return MaterialPageRoute(
+            builder: (_) => ScanScreen(
+                  data: settings.arguments,
+                ));
       case '/put-away-grn':
         return MaterialPageRoute(builder: (_) => PutAwayScreenGrn());
       case '/put-away':
