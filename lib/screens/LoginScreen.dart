@@ -150,19 +150,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                       .attemptLogin(
                                           username: _usernameController.text,
                                           password: _passwordController.text);*/
-                                   Navigator.of(context)
-                                      .pushReplacementNamed('/home');
+//                                   Navigator.of(context)
+//                                      .pushReplacementNamed('/home');
 
-//                                  runMutation(
-//                                    {
-//                                      "authData": {
-//                                        "email":
-//                                            _usernameController.text.toString(),
-//                                        "password":
-//                                            _passwordController.text.toString()
-//                                      },
-//                                    },
-//                                  );
+                                  runMutation(
+                                    {
+                                      "authData": {
+                                        "email":
+                                            _usernameController.text.toString(),
+                                        "password":
+                                            _passwordController.text.toString()
+                                      },
+                                    },
+                                  );
 
                                   /*
                                   * "email": "ciadmin@c-ileasing.com",

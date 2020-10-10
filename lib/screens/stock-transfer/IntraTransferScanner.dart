@@ -192,6 +192,18 @@ class _IntraTransferScannerScreenState
                 poList.add(POItem("000123067", 'Google Chromecast'));
                 _animatedListKey.currentState
                     ?.insertItem(0, duration: Duration(milliseconds: 500));
+                if(itemIdController.text.toString().isEmpty){
+                  Toast.show(
+                      "Enter Item ID", context,
+                      duration: Toast.LENGTH_SHORT,
+                      gravity: Toast.BOTTOM);
+                }else{
+                  Toast.show(
+                      "Item Successfully Submitted", context,
+                      duration: Toast.LENGTH_SHORT,
+                      gravity: Toast.BOTTOM);
+                }
+
               },
               label: 'Submit Item ID',
               type: ButtonType.DeepPurple,
