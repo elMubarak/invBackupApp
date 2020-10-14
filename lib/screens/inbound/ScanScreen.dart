@@ -223,7 +223,19 @@ class _ScanScreenState extends State<ScanScreen> {
                     } else {
                       Toast.show(
                           "SKU matched, Please complete process.", context);
-                      poList2.add(selectedItem);
+                      if(poList2.length>0){
+                        for(int u=0;u<poList2.length;u++){
+                          if(selectedItem.sku==poList2[u].sku)
+                            {
+                              Toast.show(
+                                  "Item ID already Added.", context);
+                              return;
+                            }
+                        }
+                      }
+                      if(poList2.length<poList.length) {
+                        poList2.add(selectedItem);
+                      }
                     }
                   });
                 },
