@@ -42,7 +42,8 @@ class Requests {
     }
     """;
   }
- String getLocation() {
+
+  String getLocation() {
     return """
     query getLocations(\$filter:WarehouseLocationFetchInput){
   warehouseLocations(warehouseLocationFetchInput:\$filter){
@@ -115,6 +116,31 @@ class Requests {
         description
       }
     }
+    """;
+  }
+
+  String NewGRN() {
+    return """
+    mutation newGRN(\$newReceipt: InboundCreateInput!){
+  createGoodsReceipt(inboundCreateInput: \$newReceipt){
+    id
+    receiptNo,
+    poNo,
+    userId
+    remark
+    statusCode
+    createdAt
+    updatedAt
+    items {
+      id
+      sku
+      qty
+      price
+      name
+      warehouseLocationId
+    }
+  }
+}
     """;
   }
 

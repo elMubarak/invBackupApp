@@ -223,7 +223,7 @@ class _ViewItemsScreenState extends State<ViewItemsScreen> {
               onPressed: poList.length > 0
                   ? () {
                       Navigator.of(context)
-                          .pushNamed('/scanner', arguments: {"items": poList});
+                          .pushNamed('/scanner', arguments: {"items": poList,"POID":poIdController.text.toString()});
                     }
                   : null,
               shape: RoundedRectangleBorder(
@@ -452,19 +452,4 @@ class POItem {
   }
 }
 
-/*class ReceiptItem {
-  int id;
-  String name;
-  String sku;
-  int qty;
-  String description;
 
-//  POItem(this.ID, this.title);
-  ReceiptItem.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    description = json['description'];
-    sku = json['sku'];
-    qty = json['qty'];
-  }
-}*/
