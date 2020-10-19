@@ -123,6 +123,8 @@ class Requests {
     return """
     mutation newGRN(\$newReceipt: InboundCreateInput!){
   createGoodsReceipt(inboundCreateInput: \$newReceipt){
+    
+    
     id
     receiptNo,
     poNo,

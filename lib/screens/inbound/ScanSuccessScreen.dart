@@ -33,7 +33,7 @@ class _ScanSuccessScreenState extends State<ScanSuccessScreen> {
             SizedBox(
               width: MediaQuery.of(context).size.width * .8,
               child: Text(
-                'All 6 items have been scanned'
+                'All '+widget.length.toString()+' items have been scanned'
                 ' into the inventory app. What will you'
                 ' like to do next?',
                 textAlign: TextAlign.center,

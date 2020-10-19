@@ -118,7 +118,15 @@ class _ScanScreenState extends State<ScanScreen> {
                 print("On Complete : ${jsonEncode(result)}");
                 var newResult = jsonDecode(data);
                 var newResult1 = jsonDecode(data);
-//              var email = newResult['authenticate']['email'];
+             var createGoodsReceipt = newResult['createGoodsReceipt'];
+             if(createGoodsReceipt!=null){
+                                    Navigator.of(context).pop();
+//                                _controller.pauseCamera();
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (_) => ScanSuccessScreen(poList2.length)));
+
+             }
 //              setState(() {
 //                Constants.contactName =
 //                newResult['authenticate']['contactName'];
@@ -336,18 +344,23 @@ class _ScanScreenState extends State<ScanScreen> {
                                           model.total=poList2[i].total.toDouble();
                                           list.add(model);
                                         }
-                                        var json=jsonEncode(list[0]).replaceAll("\\", "");
-                                        var poId=data['POID'];
+                                        var json=jsonEncode(list).replaceAll("\\", "");
+                                        var jsOBj=jsonDecode(json);
+//                                        var poId=data['POID'];
                                         var andomNumber=generateRandomNumber();
                                         runMutation(
                                             {
                                               "newReceipt": {
+
                                                 "remark": "good",
                                                 "warehouseId": 1,
-                                                "poNo": poId,
-                                                "receiptNo": andomNumber,
-                                                "items":json
+                                                "poNo": ""+data['POID'],
+                                                "receiptNo": ""+andomNumber,
+                                                "items": jsOBj
+
+
                                               }
+
                                             }
                                         );
 
