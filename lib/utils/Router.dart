@@ -64,7 +64,7 @@ class Routers {
                   locationID: settings.arguments,
                 ));
       case '/scanner-success':
-        return MaterialPageRoute(builder: (_) => ScanSuccessScreen(0));
+        return MaterialPageRoute(builder: (_) => ScanSuccessScreen(0,""));
       case '/outbound-ticket':
         return MaterialPageRoute(builder: (_) => OutboundTicketScreen());
       case '/outbound-location-scan':

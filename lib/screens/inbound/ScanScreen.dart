@@ -119,12 +119,13 @@ class _ScanScreenState extends State<ScanScreen> {
                 var newResult = jsonDecode(data);
                 var newResult1 = jsonDecode(data);
              var createGoodsReceipt = newResult['createGoodsReceipt'];
+             var poNumber = newResult['createGoodsReceipt']['receiptNo'];
              if(createGoodsReceipt!=null){
                                     Navigator.of(context).pop();
 //                                _controller.pauseCamera();
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (_) => ScanSuccessScreen(poList2.length)));
+                                        builder: (_) => ScanSuccessScreen(poList2.length,poNumber)));
 
              }
 //              setState(() {
