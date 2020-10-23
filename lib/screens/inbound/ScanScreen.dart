@@ -78,6 +78,9 @@ class _ScanScreenState extends State<ScanScreen> {
         for (POItem item in poList) {
           if (item.sku == enteredSku) {
             selectedItem = item;
+            setState(() {
+              poList.remove(item);
+            });
             break;
           }
         }
@@ -267,6 +270,9 @@ class _ScanScreenState extends State<ScanScreen> {
                             for (POItem item in poList) {
                               if (item.sku == enteredSku) {
                                 selectedItem = item;
+                                setState(() {
+                                  poList.remove(item);
+                                });
                                 break;
                               }else{
                                 selectedItem=null;
